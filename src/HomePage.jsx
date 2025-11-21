@@ -88,7 +88,7 @@ function HomePage() {
 
       {/* --- FOOTER --- */}
       <footer style={styles.footer}>
-        <div style={{opacity: 0.6}}>© 2025 EnglishForIT. Open Source Project.</div>
+        <div style={{opacity: 0.6}}>© 2025 IT.English_ Open Source Project.</div>
         <div style={{marginTop: 10}}>git push --force english-skills</div>
       </footer>
 
@@ -188,11 +188,6 @@ const styles = {
     textDecoration: 'none', borderRadius: '5px', fontWeight: 'bold',
     transition: '0.3s',
     marginTop: 'auto' // Магічна властивість: штовхає кнопку в самий низ
-  },
-  levelButton: {
-    display: 'block', marginTop: '20px', padding: '10px', textAlign: 'center',
-    textDecoration: 'none', borderRadius: '5px', fontWeight: 'bold',
-    transition: '0.3s'
   },
   footer: {
     padding: '40px', textAlign: 'center', backgroundColor: '#0a0a0a', 

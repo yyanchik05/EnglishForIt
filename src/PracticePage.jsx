@@ -137,18 +137,36 @@ function PracticePage() {
           ) : <div style={{padding: 20, color: '#777'}}>// Select a file from the explorer on the left</div>}
         </div>
 
+       
         <div style={styles.actionPanel}>
-          <div style={{ marginBottom: 10, color: '#888' }}>// TODO: Choose the correct variable assignment</div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => runCode('a')} style={styles.button} disabled={!currentTask}>
-              Option A: "{currentTask?.option_a}"
-            </button>
-            <button onClick={() => runCode('b')} style={styles.button} disabled={!currentTask}>
-              Option B: "{currentTask?.option_b}"
-            </button>
-          </div>
-        </div>
+  <div style={{ marginBottom: 10, color: '#888' }}>// TODO: Choose the correct variable assignment</div>
+  
+  {/* Сітка 2x2 для кнопок */}
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+    
+    <button onClick={() => runCode('a')} style={styles.button} disabled={!currentTask}>
+      A: "{currentTask?.option_a}"
+    </button>
+    
+    <button onClick={() => runCode('b')} style={styles.button} disabled={!currentTask}>
+      B: "{currentTask?.option_b}"
+    </button>
 
+    {/* Додаємо перевірку: показуємо кнопку, тільки якщо в базі є option_c */}
+    {currentTask?.option_c && (
+      <button onClick={() => runCode('c')} style={styles.button} disabled={!currentTask}>
+        C: "{currentTask?.option_c}"
+      </button>
+    )}
+
+    {currentTask?.option_d && (
+      <button onClick={() => runCode('d')} style={styles.button} disabled={!currentTask}>
+        D: "{currentTask?.option_d}"
+      </button>
+    )}
+    
+  </div>
+</div>
         <div style={styles.terminal}>
           <div style={styles.terminalHeader}>
             <span style={{ marginRight: 15, borderBottom: '1px solid white' }}>TERMINAL</span>
