@@ -1,0 +1,14 @@
+/* Скидаємо стандартні відступи браузера */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  background-color: #1e1e1e; /* Колір фону VS Code, щоб не мигало білим при завантаженні */
+}
+
+/* Це гарантує, що всі елементи рахуватимуть свої розміри правильно */
+*, *::before, *::after {
+  box-sizing: inherit;
+}
