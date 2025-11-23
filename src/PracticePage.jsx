@@ -45,10 +45,14 @@ function PracticePage({ specificLevel }) {
 
   const runCode = (selectedOption) => {
     if (!currentTask) return;
+    
     if (selectedOption === currentTask.correct) {
+      // Якщо правильно — показуємо результат
       setOutput(`>> BUILD SUCCESSFUL [1.2s]\n>> Return Value: "${currentTask['option_' + selectedOption]}"`);
     } else {
-      setOutput(`>> FATAL ERROR: LogicException.\n>> Expected '${currentTask.correct}', but received '${selectedOption}'.\n>> Process finished with exit code 1.`);
+      // Якщо неправильно — приховуємо правильну букву!
+      // Замість "Expected 'c'" пишемо просто "Invalid Argument"
+      setOutput(`>> FATAL ERROR: LogicException.\n>> The argument '${selectedOption}' caused a runtime error.\n>> Please review the syntax and try again.\n>> Process finished with exit code 1.`);
     }
   };
 
