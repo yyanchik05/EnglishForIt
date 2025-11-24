@@ -1,16 +1,18 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './HomePage';
-import PracticePage from './PracticePage'; // Переконайся, що створила цей файл!
+import PracticePage from './PracticePage';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Якщо адреса сайту /, показуємо Головну */}
         <Route path="/" element={<HomePage />} />
         
-        {/* Якщо адреса /practice, показуємо IDE */}
-        <Route path="/practice" element={<PracticePage />} />
+        {/* Три окремі шляхи, але використовують один "шаблон" сторінки */}
+        {/* Ми передаємо "пропсом" (param) назву рівня */}
+        <Route path="/junior" element={<PracticePage specificLevel="junior" />} />
+        <Route path="/middle" element={<PracticePage specificLevel="middle" />} />
+        <Route path="/senior" element={<PracticePage specificLevel="senior" />} />
       </Routes>
     </Router>
   );

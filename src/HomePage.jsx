@@ -124,13 +124,13 @@ function LevelCard({ level, color, desc, topics }) {
         </div>
       </div>
 
-      {/* Кнопка тепер завжди знизу і передає параметр level */}
-      <Link 
-        to={`/practice?level=${level.toLowerCase()}`} 
-        style={{ ...styles.levelButton, border: `1px solid ${color}`, color: color }}
-      >
-        Select Level
-      </Link>
+      
+<Link 
+  to={`/${level.toLowerCase()}`} 
+  style={{ ...styles.levelButton, border: `1px solid ${color}`, color: color }}
+>
+  Select Level
+</Link>
     </div>
   );
 }
