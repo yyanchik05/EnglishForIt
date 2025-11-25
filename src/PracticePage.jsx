@@ -15,11 +15,14 @@ function PracticePage({ specificLevel }) {
   const [loading, setLoading] = useState(true);
   const [categoriesOpen, setCategoriesOpen] = useState({});
   const [userInputValue, setUserInputValue] = useState("");
+  const [wrongAttempts, setWrongAttempts] = useState(0);
+  const [activeHint, setActiveHint] = useState(null);
   const [selectedFragments, setSelectedFragments] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   
   // НОВЕ: Список ID виконаних завдань
   const [completedTaskIds, setCompletedTaskIds] = useState(new Set());
+
 
   // ЕФЕКТ 1: ЗАВАНТАЖЕННЯ ЗАВДАНЬ + ПРОГРЕСУ
   useEffect(() => {
@@ -73,6 +76,8 @@ function PracticePage({ specificLevel }) {
   useEffect(() => {
     setUserInputValue("");
     setSelectedFragments([]);
+    setWrongAttempts(0);
+    setActiveHint(null);
     setOutput("Ready to run...");
   }, [currentTask]);
 
@@ -107,17 +112,36 @@ function PracticePage({ specificLevel }) {
     if (currentTask.type === 'builder') {
       finalAnswer = selectedFragments.join(' ');
     } else {
-      finalAnswer = answerToCheck || userInputValue;
+      finalAnswer = answerToCheck !== undefined ? answerToCheck : userInputValue;
     }
     
     const cleanAnswer = (finalAnswer || "").toString().toLowerCase().trim();
     const cleanCorrect = (currentTask.correct || "").toString().toLowerCase().trim();
 
     if (cleanAnswer === cleanCorrect) {
-      setOutput(`>> BUILD SUCCESSFUL [0.5s]\n>> Result: "${finalAnswer}"\n>> Status: Saved to Git History.`);
-      saveProgress(); // <--- ЗБЕРІГАЄМО ЯКЩО ПРАВИЛЬНО
+      setOutput(`>> BUILD SUCCESSFUL [0.5s]\n>> Result: "${finalAnswer}"\n>> Status: Saved.`);
+      setActiveHint(null); // Приховуємо підказку, якщо відповідь правильна
+      saveProgress();
     } else {
-      setOutput(`>> FATAL ERROR: LogicException.\n>> The argument '${finalAnswer}' caused a runtime error.\n>> Please review the syntax and try again.\n>> Process finished with exit code 1.`);
+      // Стандартна помилка в термінал
+      let errorMsg = `>> FATAL ERROR: LogicException.\n>> The argument '${finalAnswer}' caused a runtime error.\n>> Process finished with exit code 1.`;
+      
+      if (currentTask.type === 'input') {
+          const currentAttempts = wrongAttempts + 1;
+          setWrongAttempts(currentAttempts);
+
+          // ЯКЩО 3 ПОМИЛКИ - ВМИКАЄМО ПІДКАЗКУ В OKREMU ЗМІННУ
+          if (currentAttempts >= 3) {
+              const correctWord = currentTask.correct ? currentTask.correct.trim() : "";
+              let hintPattern = "...";
+              if (correctWord.length >= 2) {
+                  hintPattern = `${correctWord.charAt(0)}...${correctWord.charAt(correctWord.length - 1)}`;
+              }
+              // Записуємо в стейт, щоб показати красивим блоком
+              setActiveHint(`💡 HINT: Try pattern "${hintPattern}"`);
+          }
+      }
+      setOutput(errorMsg);
     }
   };
 
@@ -171,14 +195,17 @@ function PracticePage({ specificLevel }) {
                </SyntaxHighlighter>
             </div>
             <input
-              type="text"
-              value={userInputValue}
-              onChange={(e) => setUserInputValue(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') runCode(); }}
-              style={styles.inlineInput}
-              autoFocus
-              placeholder="..."
-            />
+  type="text"
+  value={userInputValue}
+  onChange={(e) => setUserInputValue(e.target.value)}
+  // ВАЖЛИВО: Передаємо значення e.target.value прямо у функцію!
+  onKeyDown={(e) => { 
+      if (e.key === 'Enter') runCode(e.target.value); 
+  }}
+  style={styles.inlineInput}
+  autoFocus
+  placeholder="..."
+/>
             <div style={{ display: 'flex', alignItems: 'center' }}>
                <SyntaxHighlighter language="python" style={atomOneDark} customStyle={styles.inlineCode}>
                  {parts[1] || ""}
@@ -276,7 +303,14 @@ function PracticePage({ specificLevel }) {
 
   const renderActionPanel = () => { /* Твій старий код renderActionPanel */ 
     if (!currentTask) return null;
-    if (currentTask.type === 'input') return <button onClick={() => runCode()} style={styles.runButton}>▶ EXECUTE SCRIPT</button>;
+    if (currentTask.type === 'input') {
+        // ВАЖЛИВО: Передаємо userInputValue явно при кліку
+        return (
+            <button onClick={() => runCode(userInputValue)} style={styles.runButton}>
+                ▶ EXECUTE SCRIPT
+            </button>
+        );
+    }
     if (currentTask.type === 'builder') {
         const safeFragments = Array.isArray(currentTask.fragments) ? currentTask.fragments : [];
         return <div style={{display: 'flex', flexDirection: 'column', gap: 10}}><div style={{color: '#888', fontSize: '0.8rem'}}>// Click fragments:</div><div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>{safeFragments.map((word, i) => <button key={i} onClick={() => handleFragmentClick(word)} style={styles.fragmentBtn}>{word}</button>)}</div><button onClick={() => runCode()} style={{...styles.runButton, marginTop: 10}}>▶ VERIFY STRING</button></div>;
@@ -363,6 +397,11 @@ function PracticePage({ specificLevel }) {
           <div style={styles.debugHeader}>
              <span>{currentTask?.type === 'input' ? 'MANUAL MODE' : (currentTask?.type === 'builder' ? 'CONSTRUCTOR MODE' : 'DEBUG CONSOLE')}</span>
           </div>
+          {activeHint && (
+            <div style={styles.hintBox}>
+              {activeHint}
+            </div>
+          )}
           {renderActionPanel()}
         </div>
         <div style={styles.terminal}>
@@ -407,7 +446,20 @@ const styles = {
   runButton: { backgroundColor: '#238636', color: '#fff', border: '1px solid rgba(240,246,252,0.1)', borderRadius: '6px', padding: '8px 20px', fontWeight: '600', cursor: 'pointer', width: '100%' },
   builderArea: { borderBottom: '1px dashed #61dafb', minWidth: '100px', margin: '0 5px', color: '#98c379', padding: '0 5px', cursor: 'pointer' },
   fragmentBtn: { backgroundColor: '#3e4451', border: '1px solid #565c64', color: '#abb2bf', padding: '6px 12px', borderRadius: '15px', cursor: 'pointer', fontFamily: 'monospace', fontSize: '0.9rem', transition: '0.2s' },
-  undoBtn: { background: 'transparent', border: 'none', color: '#e06c75', cursor: 'pointer', fontSize: '1.2rem', marginLeft: 10 }
+  undoBtn: { background: 'transparent', border: 'none', color: '#e06c75', cursor: 'pointer', fontSize: '1.2rem', marginLeft: 10 },
+  hintBox: {
+    backgroundColor: 'rgba(255, 193, 7, 0.1)', // Напівпрозорий жовтий
+    border: '1px solid #ffc107', // Жовта рамка
+    color: '#ffc107', // Жовтий текст
+    padding: '10px',
+    marginBottom: '15px',
+    borderRadius: '4px',
+    fontSize: '0.9rem',
+    fontFamily: 'monospace',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
 };
 
 export default PracticePage;
