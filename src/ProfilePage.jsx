@@ -129,16 +129,21 @@ export default function ProfilePage() {
                {[ '#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'].map(c => <div key={c} style={{...styles.dayBox, backgroundColor: c}}></div>)}
                <span style={styles.legendText}>More</span>
             </div>
-            <div style={styles.codeBlock}>
-              <div style={{color: '#888', marginBottom: 5}}>// User Configuration</div>
-              <div><span style={{color: '#e06c75'}}>const</span> <span style={{color: '#61dafb'}}>user</span> = {'{'}</div>
-              <div style={{paddingLeft: 20}}>
-                 level: <span style={{color: '#98c379'}}>"Mid-Senior"</span>,<br/>
-                 verified: <span style={{color: '#d19a66'}}>{String(currentUser?.emailVerified)}</span>,<br/>
-                 lastLogin: <span style={{color: '#98c379'}}>"{new Date().toLocaleDateString()}"</span>
-              </div>
-              <div>{'}'};</div>
+            {/* Code Config Block */}
+          <div style={styles.codeBlock}>
+            <div style={{color: '#8b949e', marginBottom: 5}}>// User Configuration</div>
+            <div>
+              <span style={{color: '#ff7b72'}}>const</span> <span style={{color: '#d2a8ff'}}>user</span> = {'{'}
             </div>
+            <div style={{paddingLeft: 20, lineHeight: '1.6'}}>
+               <span style={{color: '#79c0ff'}}>level</span>: <span style={{color: '#a5d6ff'}}>"Mid-Senior"</span>,<br/>
+               
+               <span style={{color: '#79c0ff'}}>verified</span>: <span style={{color: '#ff7b72'}}>{String(currentUser?.emailVerified)}</span>,<br/>
+               
+               <span style={{color: '#79c0ff'}}>lastLogin</span>: <span style={{color: '#a5d6ff'}}>"{new Date().toLocaleDateString()}"</span>
+            </div>
+            <div>{'}'};</div>
+          </div>
           </div>
 
         </div>
@@ -190,5 +195,13 @@ const styles = {
   dayBox: { width: '10px', height: '10px', borderRadius: '2px' },
   legendContainer: { display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', marginTop: '10px', fontSize: '0.8rem', color: '#8b949e' },
   legendText: { margin: '0 5px' },
-  codeBlock: { marginTop: '30px', padding: '20px', backgroundColor: '#161b22', borderRadius: '6px', border: '1px solid #30363d', fontFamily: '"JetBrains Mono", monospace', fontSize: '0.9rem' }
-};
+codeBlock: { 
+    marginTop: '30px', 
+    padding: '20px', 
+    backgroundColor: '#161b22', 
+    borderRadius: '6px', 
+    border: '1px solid #30363d', 
+    fontFamily: '"JetBrains Mono", monospace', 
+    fontSize: '0.9rem',
+    color: '#c9d1d9' 
+  }};
