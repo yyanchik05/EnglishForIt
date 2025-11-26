@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from "./contexts/AuthContext";
 
 function HomePage() {
+  const { currentUser } = useAuth();
   return (
     <div style={styles.container}>
       
@@ -8,10 +10,18 @@ function HomePage() {
       <nav style={styles.navbar}>
         <div style={styles.logo}>IT.ENGLISH_</div>
         <div style={styles.navLinks}>
-          <a href="#features" style={styles.link}>Why Us</a>
-          <a href="#levels" style={styles.link}>Levels</a>
-          <Link to="/practice" style={styles.ctaButtonSmall}>Start Coding</Link>
-        </div>
+  <a href="#features" style={styles.link}>Why Us</a>
+  <a href="#levels" style={styles.link}>Levels</a>
+
+  {/* УМОВА: Показуємо різне залежно від статусу */}
+  {currentUser ? (
+    <Link to="/profile" style={styles.ctaButtonSmall}>
+      {currentUser.email.split('@')[0]} {/* Показуємо ім'я до @ */}
+    </Link>
+  ) : (
+    <Link to="/login" style={styles.ctaButtonSmall}>Sign In</Link>
+  )}
+</div>
       </nav>
 
       {/* --- HERO SECTION (Екран 1) --- */}
