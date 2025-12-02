@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db } from "./firebase";
 import { useAuth } from "./contexts/AuthContext";
+import Sidebar from './components/Sidebar';
 
 export default function LeaderboardPage() {
   const { currentUser } = useAuth();
@@ -39,22 +40,7 @@ export default function LeaderboardPage() {
     <div style={styles.layout}>
       
       {/* --- БОКОВЕ МЕНЮ (Activity Bar) --- */}
-      <div style={styles.activityBar}>
-         <div style={styles.activityTop}>
-           <Link to="/" style={styles.activityIcon} title="Home">🏠</Link>
-           <Link to="/resources" style={styles.activityIcon} title="Knowledge Base">📖</Link>
-         </div>
-         <div style={styles.activityMiddle}>
-           <Link to="/junior" style={styles.activityIcon}>J</Link>
-           <Link to="/middle" style={styles.activityIcon}>M</Link>
-           <Link to="/senior" style={styles.activityIcon}>S</Link>
-         </div>
-         <div style={styles.activityBottom}>
-            {/* Активна іконка Кубка */}
-            <div style={styles.activityIconActive} title="Leaderboard">🏆</div>
-            <Link to="/profile" style={styles.activityIcon} title="Profile">👤</Link>
-         </div>
-      </div>
+      <Sidebar />
 
       {/* --- ЦЕНТРАЛЬНА ЧАСТИНА --- */}
       <div style={styles.contentContainer}>

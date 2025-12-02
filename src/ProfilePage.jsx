@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import { db } from "./firebase";
+import Sidebar from './components/Sidebar';
 
 export default function ProfilePage() {
   const { currentUser, logout } = useAuth();
@@ -71,23 +72,7 @@ export default function ProfilePage() {
     <div style={styles.layout}>
       
       {/* Activity Bar (Бокове меню зліва) */}
-      <div style={styles.activityBar}>
-         
-         <div style={styles.activityTop}>
-           <Link to="/" style={styles.activityIcon} title="Home">🏠</Link>
-         </div>
-
-         <div style={styles.activityMiddle}>
-           <Link to="/junior" style={styles.activityIcon} title="Junior">J</Link>
-           <Link to="/middle" style={styles.activityIcon} title="Middle">M</Link>
-           <Link to="/senior" style={styles.activityIcon} title="Senior">S</Link>
-         </div>
-
-         <div style={styles.activityBottom}>
-            <Link to="/leaderboard" style={styles.activityIcon} title="Leaderboard">🏆</Link>
-            <div style={styles.activityIconActive} title="Profile">👤</div>
-         </div>
-      </div>
+      <Sidebar />
 
       {/* Основний контент */}
       <div style={styles.contentContainer}>

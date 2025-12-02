@@ -6,6 +6,7 @@ import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext'; // Імпортуємо юзера
 import { collection, getDocs, query, where, doc, setDoc, getDoc, increment } from 'firebase/firestore';
+import Sidebar from './components/Sidebar';
 
 function PracticePage({ specificLevel }) {
   const { currentUser } = useAuth(); // Отримуємо поточного юзера
@@ -388,27 +389,7 @@ function PracticePage({ specificLevel }) {
       <style>{customScrollbarCss}</style>
       {/* Activity Bar */}
       {/* Activity Bar */}
-      <div style={styles.activityBar}>
-         
-         {/* ВЕРХ: Будиночок */}
-         <div style={styles.activityTop}>
-           <Link to="/" style={styles.activityIcon} title="Home">🏠</Link>
-           <Link to="/resources" style={styles.activityIcon} title="Knowledge Base">📖</Link>
-         </div>
-
-         {/* СЕРЕДИНА: Рівні */}
-         <div style={styles.activityMiddle}>
-           <Link to="/junior" style={specificLevel === 'junior' ? styles.activityIconActive : styles.activityIcon}>J</Link>
-           <Link to="/middle" style={specificLevel === 'middle' ? styles.activityIconActive : styles.activityIcon}>M</Link>
-           <Link to="/senior" style={specificLevel === 'senior' ? styles.activityIconActive : styles.activityIcon}>S</Link>
-         </div>
-
-         {/* НИЗ: Рейтинг і Профіль (Групуємо їх разом) */}
-         <div style={styles.activityBottom}>
-            <Link to="/leaderboard" style={styles.activityIcon} title="Leaderboard">🏆</Link>
-            <Link to="/profile" style={styles.activityIcon} title="Profile">👤</Link>
-         </div>
-      </div>
+      <Sidebar />
 
       <div style={styles.sidebar}>
         <div style={styles.explorerHeader}>EXPLORER</div>

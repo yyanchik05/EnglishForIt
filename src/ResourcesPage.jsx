@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { collection, addDoc, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "./firebase";
 import { useAuth } from "./contexts/AuthContext";
+import Sidebar from './components/Sidebar';
 
 export default function ResourcesPage() {
   const { currentUser } = useAuth();
@@ -56,22 +57,7 @@ export default function ResourcesPage() {
     <div style={styles.pageWrapper}>
       
       {/* --- БОКОВЕ МЕНЮ (Activity Bar) --- */}
-      <div style={styles.activityBar}>
-         <div style={styles.activityTop}>
-           <Link to="/" style={styles.activityIcon} title="Home">🏠</Link>
-           {/* Активна іконка книжки */}
-           <div style={styles.activityIconActive} title="Knowledge Base">📖</div>
-         </div>
-         <div style={styles.activityMiddle}>
-           <Link to="/junior" style={styles.activityIcon}>J</Link>
-           <Link to="/middle" style={styles.activityIcon}>M</Link>
-           <Link to="/senior" style={styles.activityIcon}>S</Link>
-         </div>
-         <div style={styles.activityBottom}>
-            <Link to="/leaderboard" style={styles.activityIcon}>🏆</Link>
-            <Link to="/profile" style={styles.activityIcon}>👤</Link>
-         </div>
-      </div>
+      <Sidebar />
 
       {/* --- ЦЕНТРАЛЬНА ЧАСТИНА (Контент) --- */}
       <div style={styles.contentContainer}>
