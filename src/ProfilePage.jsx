@@ -85,6 +85,11 @@ export default function ProfilePage() {
             {/* Активна іконка профілю */}
             <div style={styles.activityIconActive} title="Profile">👤</div>
          </div>
+         <div style={{marginTop: 'auto', width: '100%', height: '10px'}}></div> {/* Розділювач (необов'язково) */}
+
+<Link to="/leaderboard" style={styles.activityIcon} title="Leaderboard">
+  🏆
+</Link>
       </div>
 
       {/* --- ОБЛАСТЬ КОНТЕНТУ (По центру) --- */}

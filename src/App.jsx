@@ -7,6 +7,7 @@ import PracticePage from './PracticePage';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
 import ProfilePage from './ProfilePage';
+import LeaderboardPage from './LeaderboardPage';
 
 function App() {
   return (
@@ -36,6 +37,10 @@ function App() {
             path="/profile" 
             element={<PrivateRoute><ProfilePage /></PrivateRoute>} 
           />
+          <Route 
+  path="/leaderboard" 
+  element={<PrivateRoute><LeaderboardPage /></PrivateRoute>} 
+/>
         </Routes>
       </Router>
     </AuthProvider>
