@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { db } from './firebase';
 // Додали setDoc, doc для запису прогресу
-import { collection, getDocs, query, where, doc, setDoc, getDoc } from 'firebase/firestore';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext'; // Імпортуємо юзера
+import { collection, getDocs, query, where, doc, setDoc, getDoc, increment } from 'firebase/firestore';
+import Sidebar from './components/Sidebar';
 
 function PracticePage({ specificLevel }) {
   const { currentUser } = useAuth(); // Отримуємо поточного юзера
@@ -86,19 +87,37 @@ function PracticePage({ specificLevel }) {
     if (!currentUser || !currentTask) return;
     
     try {
-        // Створюємо унікальний ID запису: "userId_taskId"
+        // 1. Зберігаємо факт виконання (для галочки і графіка)
         const progressId = `${currentUser.uid}_${currentTask.id}`;
-        const today = new Date().toISOString().split('T')[0]; // "2023-11-25"
+        const today = new Date().toISOString().split('T')[0];
 
-        await setDoc(doc(db, "user_progress", progressId), {
-            userId: currentUser.uid,
-            taskId: currentTask.id,
-            date: today,
-            level: specificLevel
-        });
+        // Перевіряємо, чи ми вже виконували це завдання раніше
+        // Щоб не накручувати очки за одне й те саме завдання
+        const docRef = doc(db, "user_progress", progressId);
+        const docSnap = await getDoc(docRef);
 
-        // Оновлюємо стан локально (щоб з'явилась галочка без перезавантаження)
-        setCompletedTaskIds(prev => new Set(prev).add(currentTask.id));
+        if (!docSnap.exists()) {
+            // Якщо це перше виконання:
+            
+            // А. Записуємо в історію
+            await setDoc(docRef, {
+                userId: currentUser.uid,
+                taskId: currentTask.id,
+                date: today,
+                level: specificLevel
+            });
+
+            // Б. Оновлюємо РАХУНОК у таблиці лідерів (+1)
+            const statsRef = doc(db, "leaderboard", currentUser.uid);
+            await setDoc(statsRef, {
+                username: currentUser.displayName || currentUser.email.split('@')[0],
+                photoURL: currentUser.photoURL || null,
+                score: increment(1) // Магічна функція Firebase: додає 1 атомарно
+            }, { merge: true });
+
+            // В. Оновлюємо локальний стан галочок
+            setCompletedTaskIds(prev => new Set(prev).add(currentTask.id));
+        }
         
     } catch (error) {
         console.error("Failed to save progress:", error);
@@ -369,17 +388,8 @@ function PracticePage({ specificLevel }) {
     <div style={styles.container}>
       <style>{customScrollbarCss}</style>
       {/* Activity Bar */}
-      <div style={styles.activityBar}>
-         <div style={styles.activityTop}><Link to="/" style={styles.activityIcon}>🏠</Link></div>
-         <div style={styles.activityMiddle}>
-           <Link to="/junior" style={specificLevel === 'junior' ? styles.activityIconActive : styles.activityIcon}>J</Link>
-           <Link to="/middle" style={specificLevel === 'middle' ? styles.activityIconActive : styles.activityIcon}>M</Link>
-           <Link to="/senior" style={specificLevel === 'senior' ? styles.activityIconActive : styles.activityIcon}>S</Link>
-         </div>
-         <div style={styles.activityBottom}>
-            <Link to="/profile" style={styles.activityIcon} title="Profile">👤</Link>
-         </div>
-      </div>
+      {/* Activity Bar */}
+      <Sidebar />
 
       <div style={styles.sidebar}>
         <div style={styles.explorerHeader}>EXPLORER</div>

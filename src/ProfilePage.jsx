@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import { db } from "./firebase";
+import Sidebar from './components/Sidebar';
 
 export default function ProfilePage() {
   const { currentUser, logout } = useAuth();
@@ -43,8 +44,20 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    try { await logout(); navigate("/login"); } 
-    catch (error) { console.error(error); }
+    // 1. Питаємо користувача
+    const shouldLogout = window.confirm("Are you sure you want to log out?");
+    
+    // 2. Якщо натиснув "Cancel" - зупиняємось
+    if (!shouldLogout) return;
+
+    try { 
+      // 3. Якщо "OK" - виходимо
+      await logout(); 
+      navigate("/login"); 
+    } 
+    catch (error) { 
+      console.error(error); 
+    }
   };
 
   const renderContributionGraph = () => {
@@ -68,33 +81,22 @@ export default function ProfilePage() {
   const progressPercentage = totalTasks > 0 ? Math.round((completedCount / totalTasks) * 100) : 0;
 
   return (
-    // Головний контейнер (на всю ширину)
     <div style={styles.layout}>
       
-      {/* --- БОКОВЕ МЕНЮ (Activity Bar) --- */}
-      <div style={styles.activityBar}>
-         <div style={styles.activityTop}>
-           <Link to="/" style={styles.activityIcon} title="Home">🏠</Link>
-         </div>
-         <div style={styles.activityMiddle}>
-           <Link to="/junior" style={styles.activityIcon} title="Junior">J</Link>
-           <Link to="/middle" style={styles.activityIcon} title="Middle">M</Link>
-           <Link to="/senior" style={styles.activityIcon} title="Senior">S</Link>
-         </div>
-         <div style={styles.activityBottom}>
-            {/* Активна іконка профілю */}
-            <div style={styles.activityIconActive} title="Profile">👤</div>
-         </div>
-      </div>
+      {/* Activity Bar (Бокове меню зліва) */}
+      <Sidebar />
 
-      {/* --- ОБЛАСТЬ КОНТЕНТУ (По центру) --- */}
+      {/* Основний контент */}
       <div style={styles.contentContainer}>
         <div style={styles.mainCard}>
           
-          {/* Ліва панель картки */}
+          {/* Ліва панель */}
           <div style={styles.leftPanel}>
             <div style={styles.avatarSection}>
-              <img src={avatarUrl} alt="Avatar" style={styles.avatar} />
+              <div style={styles.avatarWrapper}>
+                 <img src={avatarUrl} alt="Avatar" style={styles.avatar} />
+              </div>
+              
               {isEditing ? (
                 <div style={{display: 'flex', gap: 5, marginTop: 15}}>
                   <input value={newName} onChange={(e) => setNewName(e.target.value)} style={styles.nameInput} placeholder="Name"/>
@@ -118,7 +120,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Права панель картки */}
+          {/* Права панель */}
           <div style={styles.rightPanel}>
             <div style={styles.sectionTitle}>contribution_graph.git</div>
             <div style={styles.graphWrapper}>
@@ -129,21 +131,20 @@ export default function ProfilePage() {
                {[ '#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'].map(c => <div key={c} style={{...styles.dayBox, backgroundColor: c}}></div>)}
                <span style={styles.legendText}>More</span>
             </div>
+            
             {/* Code Config Block */}
-          <div style={styles.codeBlock}>
-            <div style={{color: '#8b949e', marginBottom: 5}}>// User Configuration</div>
-            <div>
-              <span style={{color: '#ff7b72'}}>const</span> <span style={{color: '#d2a8ff'}}>user</span> = {'{'}
+            <div style={styles.codeBlock}>
+              <div style={{color: '#8b949e', marginBottom: 5}}>// User Configuration</div>
+              <div>
+                <span style={{color: '#ff7b72'}}>const</span> <span style={{color: '#d2a8ff'}}>user</span> = {'{'}
+              </div>
+              <div style={{paddingLeft: 20, lineHeight: '1.6'}}>
+                 <span style={{color: '#79c0ff'}}>level</span>: <span style={{color: '#a5d6ff'}}>"Mid-Senior"</span>,<br/>
+                 <span style={{color: '#79c0ff'}}>verified</span>: <span style={{color: '#ff7b72'}}>{String(currentUser?.emailVerified)}</span>,<br/>
+                 <span style={{color: '#79c0ff'}}>lastLogin</span>: <span style={{color: '#a5d6ff'}}>"{new Date().toLocaleDateString()}"</span>
+              </div>
+              <div>{'}'};</div>
             </div>
-            <div style={{paddingLeft: 20, lineHeight: '1.6'}}>
-               <span style={{color: '#79c0ff'}}>level</span>: <span style={{color: '#a5d6ff'}}>"Mid-Senior"</span>,<br/>
-               
-               <span style={{color: '#79c0ff'}}>verified</span>: <span style={{color: '#ff7b72'}}>{String(currentUser?.emailVerified)}</span>,<br/>
-               
-               <span style={{color: '#79c0ff'}}>lastLogin</span>: <span style={{color: '#a5d6ff'}}>"{new Date().toLocaleDateString()}"</span>
-            </div>
-            <div>{'}'};</div>
-          </div>
           </div>
 
         </div>
@@ -153,39 +154,37 @@ export default function ProfilePage() {
 }
 
 const styles = {
-  // Оновлений лейаут сторінки
   layout: { display: 'flex', height: '100vh', backgroundColor: '#1e1e1e', overflow: 'hidden', fontFamily: '"JetBrains Mono", monospace' },
   
-  // Стилі для Activity Bar (ідентичні PracticePage)
-  activityBar: { width: '50px', backgroundColor: '#333333', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderRight: '1px solid #252526', zIndex: 10, flexShrink: 0 },
+  // Activity Bar (Оновлений, такий самий як в PracticePage)
+  activityBar: { width: '50px', backgroundColor: '#333333', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderRight: '1px solid #252526', zIndex: 10, flexShrink: 0 },
   activityTop: { display: 'flex', flexDirection: 'column', gap: 20 },
   activityMiddle: { display: 'flex', flexDirection: 'column', gap: 15 },
-  activityBottom: { marginBottom: 10 },
+  activityBottom: { marginBottom: 10, display: 'flex', flexDirection: 'column', gap: 15 },
+  
   activityIcon: { fontSize: '1.2rem', cursor: 'pointer', opacity: 0.6, textDecoration: 'none', color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '40px', height: '40px', borderRadius: '5px', transition: '0.2s' },
   activityIconActive: { fontSize: '1.2rem', cursor: 'pointer', opacity: 1, textDecoration: 'none', color: '#fff', borderLeft: '2px solid #fff', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#252526' },
 
-  // Контейнер для контенту (щоб центрувати картку)
   contentContainer: { flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', overflowY: 'auto' },
-
-  // Стилі самої картки (залишилися як були)
   mainCard: { display: 'flex', flexDirection: 'row', backgroundColor: '#0d1117', border: '1px solid #30363d', borderRadius: '6px', width: '100%', maxWidth: '1200px', overflow: 'hidden', boxShadow: '0 0 20px rgba(0,0,0,0.5)', flexWrap: 'wrap' },
   leftPanel: { width: '300px', padding: '30px', borderRight: '1px solid #30363d', backgroundColor: '#0d1117', display: 'flex', flexDirection: 'column', flexShrink: 0 },
   rightPanel: { flex: 1, padding: '30px', display: 'flex', flexDirection: 'column' },
   
-  // Елементи профілю
-  avatarSection: { marginBottom: '30px' },
-  avatar: { width: '150px', height: '150px', borderRadius: '50%', border: '1px solid #30363d', marginBottom: '20px' },
+  avatarSection: { marginBottom: '30px', display: 'flex', flexDirection: 'column', alignItems: 'center' },
+  avatarWrapper: { width: '150px', height: '150px', marginBottom: '20px', borderRadius: '50%', overflow: 'hidden' },
+  avatar: { width: '100%', height: '100%', objectFit: 'cover' },
+  
   userName: { fontSize: '1.5rem', fontWeight: 'bold', color: '#fff', margin: '0 0 5px 0', cursor: 'pointer' },
   nameInput: { background: '#0d1117', border: '1px solid #30363d', color: '#fff', padding: '5px', borderRadius: '4px', width: '100%' },
   saveBtn: { background: '#238636', border: 'none', color: '#fff', borderRadius: '4px', cursor: 'pointer' },
   userHandle: { fontSize: '1rem', color: '#8b949e', margin: 0 },
   
-  statsGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '30px' },
+  statsGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '30px', width: '100%' },
   statBox: { backgroundColor: '#161b22', padding: '10px', borderRadius: '6px', border: '1px solid #30363d', textAlign: 'center' },
   statValue: { fontSize: '1.2rem', fontWeight: 'bold', color: '#fff' },
   statLabel: { fontSize: '0.75rem', color: '#8b949e' },
 
-  menu: { marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' },
+  menu: { marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' },
   menuBtn: { display: 'block', textAlign: 'center', padding: '10px', backgroundColor: '#21262d', color: '#c9d1d9', textDecoration: 'none', borderRadius: '6px', border: '1px solid #30363d', fontSize: '0.9rem' },
   logoutBtn: { padding: '10px', backgroundColor: '#da3633', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' },
 
@@ -195,13 +194,7 @@ const styles = {
   dayBox: { width: '10px', height: '10px', borderRadius: '2px' },
   legendContainer: { display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', marginTop: '10px', fontSize: '0.8rem', color: '#8b949e' },
   legendText: { margin: '0 5px' },
-codeBlock: { 
-    marginTop: '30px', 
-    padding: '20px', 
-    backgroundColor: '#161b22', 
-    borderRadius: '6px', 
-    border: '1px solid #30363d', 
-    fontFamily: '"JetBrains Mono", monospace', 
-    fontSize: '0.9rem',
-    color: '#c9d1d9' 
-  }};
+  
+  // Кольоровий блок коду
+  codeBlock: { marginTop: '30px', padding: '20px', backgroundColor: '#161b22', borderRadius: '6px', border: '1px solid #30363d', fontFamily: '"JetBrains Mono", monospace', fontSize: '0.9rem', color: '#c9d1d9' }
+};

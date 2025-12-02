@@ -7,6 +7,8 @@ import PracticePage from './PracticePage';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
 import ProfilePage from './ProfilePage';
+import LeaderboardPage from './LeaderboardPage';
+import ResourcesPage from './ResourcesPage';
 
 function App() {
   return (
@@ -36,6 +38,14 @@ function App() {
             path="/profile" 
             element={<PrivateRoute><ProfilePage /></PrivateRoute>} 
           />
+          <Route 
+  path="/leaderboard" 
+  element={<PrivateRoute><LeaderboardPage /></PrivateRoute>} 
+/>
+<Route 
+  path="/resources" 
+  element={<PrivateRoute><ResourcesPage /></PrivateRoute>} 
+/>
         </Routes>
       </Router>
     </AuthProvider>
