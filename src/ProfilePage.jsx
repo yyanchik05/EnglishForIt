@@ -44,8 +44,20 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    try { await logout(); navigate("/login"); } 
-    catch (error) { console.error(error); }
+    // 1. Питаємо користувача
+    const shouldLogout = window.confirm("Are you sure you want to log out?");
+    
+    // 2. Якщо натиснув "Cancel" - зупиняємось
+    if (!shouldLogout) return;
+
+    try { 
+      // 3. Якщо "OK" - виходимо
+      await logout(); 
+      navigate("/login"); 
+    } 
+    catch (error) { 
+      console.error(error); 
+    }
   };
 
   const renderContributionGraph = () => {

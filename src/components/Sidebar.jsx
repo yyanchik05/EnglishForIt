@@ -19,9 +19,9 @@ export default function Sidebar() {
        </div>
 
        <div style={styles.group}>
-         <Link to="/junior" style={getStyle('/junior')}>J</Link>
-         <Link to="/middle" style={getStyle('/middle')}>M</Link>
-         <Link to="/senior" style={getStyle('/senior')}>S</Link>
+         <Link to="/junior" style={getStyle('/junior')}title="Junior Level">J</Link>
+         <Link to="/middle" style={getStyle('/middle')}title="Middle Level">M</Link>
+         <Link to="/senior" style={getStyle('/senior')}title="Senior Level">S</Link>
        </div>
 
        <div style={styles.group}>
