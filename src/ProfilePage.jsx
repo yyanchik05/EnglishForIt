@@ -5,6 +5,7 @@ import { collection, getDocs, query, where, doc, setDoc } from "firebase/firesto
 import { updateProfile } from "firebase/auth";
 import { db } from "./firebase";
 import Sidebar from "./components/Sidebar";
+import { Terminal, GitCommit, Bug, Cpu } from "lucide-react";
 
 export default function ProfilePage() {
   const { currentUser, logout } = useAuth();
@@ -72,6 +73,27 @@ export default function ProfilePage() {
     try { await logout(); navigate("/login"); } 
     catch (error) { console.error(error); }
   };
+
+  // Технічний бейдж (виглядає як лейбл на GitHub)
+function SkillBadge({ icon: Icon, title, unlocked, desc }) {
+  return (
+    <div title={desc} style={{
+       display: 'flex', alignItems: 'center', gap: 8,
+       padding: '4px 10px', 
+       borderRadius: '4px', // Квадратніші кути
+       backgroundColor: unlocked ? 'rgba(56, 139, 253, 0.15)' : 'rgba(110, 118, 129, 0.1)', // Кольори GitHub
+       border: `1px solid ${unlocked ? 'rgba(56, 139, 253, 0.4)' : 'rgba(110, 118, 129, 0.4)'}`,
+       opacity: unlocked ? 1 : 0.5,
+       cursor: 'help',
+       fontFamily: 'monospace',
+       fontSize: '0.8rem',
+       color: unlocked ? '#58a6ff' : '#8b949e'
+    }}>
+       <Icon size={14} />
+       <span>{title}</span>
+    </div>
+  );
+}
 
   const renderContributionGraph = () => {
     const days = [];
@@ -156,6 +178,16 @@ export default function ProfilePage() {
                  <span style={{color: '#79c0ff'}}>lastLogin</span>: <span style={{color: '#a5d6ff'}}>"{new Date().toLocaleDateString()}"</span>
               </div>
               <div>{'}'};</div>
+
+              <div style={{marginTop: 30}}>
+               <div style={styles.sectionTitle}>verified_skills.json</div>
+               <div style={{display: 'flex', gap: 10, flexWrap: 'wrap'}}>
+                  <SkillBadge icon={Terminal} title="Console_Basic" unlocked={completedCount >= 1} desc="First script executed" />
+                  <SkillBadge icon={GitCommit} title="Git_Flow" unlocked={completedCount >= 10} desc="10 commits pushed" />
+                  <SkillBadge icon={Cpu} title="System_Design" unlocked={completedCount >= 25} desc="Architecture mastery" />
+                  <SkillBadge icon={Bug} title="Bug_Hunter" unlocked={completedCount >= 50} desc="50 issues resolved" />
+               </div>
+            </div>
             </div>
           </div>
 
