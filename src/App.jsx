@@ -9,6 +9,7 @@ import RegisterPage from './RegisterPage';
 import ProfilePage from './ProfilePage';
 import LeaderboardPage from './LeaderboardPage';
 import ResourcesPage from './ResourcesPage';
+import VerifyEmailPage from './VerifyEmailPage';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
   path="/resources" 
   element={<PrivateRoute><ResourcesPage /></PrivateRoute>} 
 />
+<Route path="/verify-email" element={<VerifyEmailPage />} />
         </Routes>
       </Router>
     </AuthProvider>
