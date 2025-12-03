@@ -6,6 +6,9 @@ An interactive, IDE-style platform designed to help IT professionals master tech
 
 (![Project Preview](./images)) 
 
+Video on YouTube : https://youtu.be/ZJFswraytc4
+Limk on the site: https://it-english-beryl.vercel.app/
+
 ## Features
 
 * **IDE Simulation UI:** Dark theme, file explorer, terminal output, and syntax highlighting.
