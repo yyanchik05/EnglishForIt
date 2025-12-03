@@ -24,11 +24,7 @@ const getRoleColor = (score) => {
 };
 
 const getBadges = (score) => {
-  const badges = [];
-  if (score >= 10) badges.push("⚡");
-  if (score >= 50) badges.push("🛡️");
-  if (score >= 100) badges.push("🔥");
-  return badges;
+  return [];
 };
 
 export default function LeaderboardPage() {
