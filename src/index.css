@@ -1,44 +1,40 @@
 html {
   scroll-behavior: smooth;
-}/* Скидаємо стандартні відступи браузера */
+}
 body, html {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  background-color: #1e1e1e; /* Колір фону VS Code, щоб не мигало білим при завантаженні */
+  background-color: #1e1e1e; 
 }
 
-/* Це гарантує, що всі елементи рахуватимуть свої розміри правильно */
 *, *::before, *::after {
   box-sizing: inherit;
 }
 
-/* --- UNIVERSAL DARK SCROLLBAR (VS Code Style) --- */
 
-/* Працює для ВСІХ елементів (*), а не тільки для body */
 *::-webkit-scrollbar {
-  width: 10px;               /* Ширина вертикального */
-  height: 10px;              /* Висота горизонтального */
+  width: 10px;               
+  height: 10px;           
 }
 
 *::-webkit-scrollbar-track {
-  background: #1e1e1e;       /* Колір фону (під колір твого редактора) */
-  border-left: 1px solid #333; /* Тонка лінія зліва */
+  background: #1e1e1e;      
+  border-left: 1px solid #333; 
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #424242; /* Колір повзунка (темно-сірий) */
-  border: 2px solid #1e1e1e; /* Відступ від країв (робить його тоншим) */
-  border-radius: 10px;       /* Закруглені краї */
+  background-color: #424242; 
+  border: 2px solid #1e1e1e; 
+  border-radius: 10px;     
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background-color: #5a5a5a; /* Трохи світліший при наведенні */
+  background-color: #5a5a5a; 
 }
 
-/* Прибираємо куток, де сходяться два скроли */
 *::-webkit-scrollbar-corner {
   background: #1e1e1e;
 }

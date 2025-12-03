@@ -11,16 +11,13 @@ export default function ProfilePage() {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   
-  // --- ВИПРАВЛЕННЯ: Тепер ім'я береться напряму, без магії з емейлом ---
   const displayName = currentUser?.displayName || "Anonymous Dev";
-  // ---------------------------------------------------------------------
 
   const [contributions, setContributions] = useState({});
   const [totalTasks, setTotalTasks] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
   
   const [isEditing, setIsEditing] = useState(false);
-  // При редагуванні починаємо з поточного імені (або пустоти, якщо це "Anonymous Dev")
   const [newName, setNewName] = useState(currentUser?.displayName || "");
 
   useEffect(() => {
@@ -47,19 +44,14 @@ export default function ProfilePage() {
 
   const handleUpdateName = async () => {
     try { 
-        // 1. Оновлюємо офіційне ім'я користувача (в Auth)
         await updateProfile(currentUser, { displayName: newName }); 
         
-        // 2. ВАЖЛИВО: Оновлюємо ім'я в базі даних лідерів!
-        // Щоб інші користувачі теж бачили твоє нове ім'я, а не емейл
         const userRef = doc(db, "leaderboard", currentUser.uid);
         
-        // Використовуємо merge: true, щоб не стерти очки (score)
         await setDoc(userRef, { username: newName }, { merge: true });
 
         setIsEditing(false); 
         
-        // Оновлюємо сторінку, щоб зміни підтягнулися всюди
         window.location.reload();
         
     } catch (error) { 
@@ -74,13 +66,12 @@ export default function ProfilePage() {
     catch (error) { console.error(error); }
   };
 
-  // Технічний бейдж (виглядає як лейбл на GitHub)
 function SkillBadge({ icon: Icon, title, unlocked, desc }) {
   return (
     <div title={desc} style={{
        display: 'flex', alignItems: 'center', gap: 8,
        padding: '4px 10px', 
-       borderRadius: '4px', // Квадратніші кути
+       borderRadius: '4px', 
        backgroundColor: unlocked ? 'rgba(56, 139, 253, 0.15)' : 'rgba(110, 118, 129, 0.1)', // Кольори GitHub
        border: `1px solid ${unlocked ? 'rgba(56, 139, 253, 0.4)' : 'rgba(110, 118, 129, 0.4)'}`,
        opacity: unlocked ? 1 : 0.5,
@@ -112,7 +103,6 @@ function SkillBadge({ icon: Icon, title, unlocked, desc }) {
     return days;
   };
 
-  // Аватарка: якщо немає фото, генеруємо з displayName (або email, якщо імені нема)
   const avatarName = currentUser?.displayName || currentUser?.email || "User";
   const avatarUrl = currentUser?.photoURL || `https://ui-avatars.com/api/?name=${avatarName}&background=random&color=fff&size=128`;
   
@@ -137,7 +127,6 @@ function SkillBadge({ icon: Icon, title, unlocked, desc }) {
                   <button onClick={handleUpdateName} style={styles.saveBtn}>✓</button>
                 </div>
               ) : (
-                // ТУТ ВІДОБРАЖАЄТЬСЯ ІМ'Я В ЗАГОЛОВКУ
                 <h1 style={styles.userName} onClick={() => setIsEditing(true)} title="Click to edit">
                   {displayName} ✎
                 </h1>
@@ -166,12 +155,10 @@ function SkillBadge({ icon: Icon, title, unlocked, desc }) {
                <span style={styles.legendText}>More</span>
             </div>
             
-            {/* БЛОК КОНФІГУРАЦІЇ */}
             <div style={styles.codeBlock}>
               <div style={{color: '#8b949e', marginBottom: 5}}>// User Configuration</div>
               <div><span style={{color: '#ff7b72'}}>const</span> <span style={{color: '#d2a8ff'}}>user</span> = {'{'}</div>
               <div style={{paddingLeft: 20, lineHeight: '1.6'}}>
-                 {/* ТУТ ВІДОБРАЖАЄТЬСЯ ІМ'Я В КОДІ */}
                  <span style={{color: '#79c0ff'}}>username</span>: <span style={{color: '#a5d6ff'}}>"{displayName}"</span>,<br/>
                  
                  <span style={{color: '#79c0ff'}}>verified</span>: <span style={{color: '#ff7b72'}}>{String(currentUser?.emailVerified)}</span>,<br/>

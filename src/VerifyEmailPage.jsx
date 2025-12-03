@@ -14,11 +14,9 @@ export default function VerifyEmailPage() {
   };
 
   const checkVerification = async () => {
-    // Оновлюємо дані користувача з сервера
     await currentUser.reload();
     
     if (currentUser.emailVerified) {
-      // Якщо підтвердив - пускаємо в додаток
       navigate("/junior");
     } else {
       alert("Not verified yet. Check your spam folder!");

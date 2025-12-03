@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
 import { db } from './firebase';
-// Додали setDoc, doc для запису прогресу
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { useSearchParams, Link } from 'react-router-dom';
-import { useAuth } from './contexts/AuthContext'; // Імпортуємо юзера
+import { useAuth } from './contexts/AuthContext'; 
 import { collection, getDocs, query, where, doc, setDoc, getDoc, increment } from 'firebase/firestore';
 import Sidebar from './components/Sidebar';
 
 function PracticePage({ specificLevel }) {
-  const { currentUser } = useAuth(); // Отримуємо поточного юзера
+  const { currentUser } = useAuth(); 
   const [tasks, setTasks] = useState([]);
   const [currentTask, setCurrentTask] = useState(null);
   const [output, setOutput] = useState("Ready to run...");
@@ -21,17 +20,14 @@ function PracticePage({ specificLevel }) {
   const [selectedFragments, setSelectedFragments] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   
-  // НОВЕ: Список ID виконаних завдань
   const [completedTaskIds, setCompletedTaskIds] = useState(new Set());
 
 
-  // ЕФЕКТ 1: ЗАВАНТАЖЕННЯ ЗАВДАНЬ + ПРОГРЕСУ
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        // 1. Завантажуємо завдання
         const q = query(collection(db, "tasks"), where("level", "==", specificLevel));
         const querySnapshot = await getDocs(q);
         const loadedTasks = querySnapshot.docs.map(doc => ({
@@ -41,7 +37,6 @@ function PracticePage({ specificLevel }) {
         }));
         setTasks(loadedTasks);
 
-        // 2. Завантажуємо прогрес юзера
         if (currentUser) {
             const progressQuery = query(collection(db, "user_progress"), where("userId", "==", currentUser.uid));
             const progressSnapshot = await getDocs(progressQuery);
@@ -49,13 +44,11 @@ function PracticePage({ specificLevel }) {
             setCompletedTaskIds(completedIds);
         }
 
-        // 3. Логіка відкриття папок
         const uniqueCategories = [...new Set(loadedTasks.map(t => t.category))];
         const initialOpenState = {};
         uniqueCategories.forEach(cat => initialOpenState[cat] = true);
         setCategoriesOpen(initialOpenState);
 
-        // 4. URL Sync
         const taskIdFromUrl = searchParams.get("task");
         if (taskIdFromUrl) {
             const found = loadedTasks.find(t => t.id === taskIdFromUrl);
@@ -82,24 +75,17 @@ function PracticePage({ specificLevel }) {
     setOutput("Ready to run...");
   }, [currentTask]);
 
-  // --- ФУНКЦІЯ ЗБЕРЕЖЕННЯ ПРОГРЕСУ ---
   const saveProgress = async () => {
     if (!currentUser || !currentTask) return;
     
     try {
-        // 1. Зберігаємо факт виконання (для галочки і графіка)
         const progressId = `${currentUser.uid}_${currentTask.id}`;
         const today = new Date().toISOString().split('T')[0];
 
-        // Перевіряємо, чи ми вже виконували це завдання раніше
-        // Щоб не накручувати очки за одне й те саме завдання
         const docRef = doc(db, "user_progress", progressId);
         const docSnap = await getDoc(docRef);
 
         if (!docSnap.exists()) {
-            // Якщо це перше виконання:
-            
-            // А. Записуємо в історію
             await setDoc(docRef, {
                 userId: currentUser.uid,
                 taskId: currentTask.id,
@@ -107,15 +93,13 @@ function PracticePage({ specificLevel }) {
                 level: specificLevel
             });
 
-            // Б. Оновлюємо РАХУНОК у таблиці лідерів (+1)
             const statsRef = doc(db, "leaderboard", currentUser.uid);
             await setDoc(statsRef, {
                 username: currentUser.displayName || currentUser.email.split('@')[0],
                 photoURL: currentUser.photoURL || null,
-                score: increment(1) // Магічна функція Firebase: додає 1 атомарно
+                score: increment(1) 
             }, { merge: true });
 
-            // В. Оновлюємо локальний стан галочок
             setCompletedTaskIds(prev => new Set(prev).add(currentTask.id));
         }
         
@@ -139,24 +123,21 @@ function PracticePage({ specificLevel }) {
 
     if (cleanAnswer === cleanCorrect) {
       setOutput(`>> BUILD SUCCESSFUL [0.5s]\n>> Result: "${finalAnswer}"\n>> Status: Saved.`);
-      setActiveHint(null); // Приховуємо підказку, якщо відповідь правильна
+      setActiveHint(null); 
       saveProgress();
     } else {
-      // Стандартна помилка в термінал
       let errorMsg = `>> FATAL ERROR: LogicException.\n>> The argument '${finalAnswer}' caused a runtime error.\n>> Process finished with exit code 1.`;
       
       if (currentTask.type === 'input') {
           const currentAttempts = wrongAttempts + 1;
           setWrongAttempts(currentAttempts);
 
-          // ЯКЩО 3 ПОМИЛКИ - ВМИКАЄМО ПІДКАЗКУ В OKREMU ЗМІННУ
           if (currentAttempts >= 3) {
               const correctWord = currentTask.correct ? currentTask.correct.trim() : "";
               let hintPattern = "...";
               if (correctWord.length >= 2) {
                   hintPattern = `${correctWord.charAt(0)}...${correctWord.charAt(correctWord.length - 1)}`;
               }
-              // Записуємо в стейт, щоб показати красивим блоком
               setActiveHint(`💡 HINT: Try pattern "${hintPattern}"`);
           }
       }
@@ -164,10 +145,6 @@ function PracticePage({ specificLevel }) {
     }
   };
 
-  // ... (Інші функції: toggleCategory, handleFragmentClick, renderCodeEditor, renderActionPanel залишаються без змін) ...
-  // ... (Щоб не роздувати відповідь, скопіюй їх зі старого файлу, вони не змінилися) ...
-  // АЛЕ! У renderCodeEditor і renderActionPanel нічого не мінялося.
-  // ТОМУ НИЖЧЕ Я ПИШУ ТІЛЬКИ ТЕ ЩО ТРЕБА ДЛЯ РЕНДЕРА СПИСКУ ФАЙЛІВ
 
   const toggleCategory = (category) => setCategoriesOpen(prev => ({ ...prev, [category]: !prev[category] }));
   const handleFragmentClick = (word) => setSelectedFragments([...selectedFragments, word]);
@@ -177,20 +154,15 @@ function PracticePage({ specificLevel }) {
   const renderCodeEditor = () => {
     if (!currentTask) return null;
 
-    // --- ВИПРАВЛЕННЯ ТУТ ---
-    // Ми беремо код з бази і замінюємо текстові "\n" на справжні переноси рядків
     const cleanCode = (currentTask.code || '').replace(/\\n/g, '\n');
 
-    // Далі використовуємо cleanCode замість currentTask.code
     const totalLines = cleanCode.split('\n').length;
     let content = null;
 
-    // --- СЦЕНАРІЙ 1: INPUT MODE ---
     if (currentTask.type === 'input' && cleanCode.includes('____')) {
       const lines = cleanCode.split('\n');
       const inputLineIndex = lines.findIndex(line => line.includes('____'));
       
-      // Захист: якщо раптом ____ не знайдено (хоча include каже що є)
       if (inputLineIndex === -1) return <div>Error parsing code structure</div>;
 
       const codeBefore = lines.slice(0, inputLineIndex).join('\n');
@@ -217,7 +189,6 @@ function PracticePage({ specificLevel }) {
   type="text"
   value={userInputValue}
   onChange={(e) => setUserInputValue(e.target.value)}
-  // ВАЖЛИВО: Передаємо значення e.target.value прямо у функцію!
   onKeyDown={(e) => { 
       if (e.key === 'Enter') runCode(e.target.value); 
   }}
@@ -240,7 +211,6 @@ function PracticePage({ specificLevel }) {
         </div>
       );
     
-    // --- СЦЕНАРІЙ 2: BUILDER MODE ---
     } else if (currentTask.type === 'builder' && cleanCode.includes('____')) {
         const lines = cleanCode.split('\n');
         const inputLineIndex = lines.findIndex(line => line.includes('____'));
@@ -292,7 +262,6 @@ function PracticePage({ specificLevel }) {
           </div>
         );
 
-    // --- СЦЕНАРІЙ 3: ЗВИЧАЙНИЙ РЕЖИМ ---
     } else {
         content = (
             <SyntaxHighlighter 
@@ -323,7 +292,6 @@ function PracticePage({ specificLevel }) {
   const renderActionPanel = () => {
     if (!currentTask) return null;
 
-    // 1. INPUT MODE
     if (currentTask.type === 'input') {
         return (
             <button onClick={() => runCode(userInputValue)} style={styles.runButton}>
@@ -332,7 +300,6 @@ function PracticePage({ specificLevel }) {
         );
     }
 
-    // 2. BUILDER MODE
     if (currentTask.type === 'builder') {
         const safeFragments = Array.isArray(currentTask.fragments) ? currentTask.fragments : [];
         return (
@@ -348,7 +315,6 @@ function PracticePage({ specificLevel }) {
         );
     }
 
-    // 3. CHOICE MODE (Виправлено: Додані C і D)
     return (
         <div style={styles.gridOptions}>
           <button onClick={() => runCode('a')} style={styles.optionBtn}>
@@ -358,7 +324,6 @@ function PracticePage({ specificLevel }) {
              var b = "{currentTask?.option_b}"
           </button>
           
-          {/* --- ОСЬ ЦЬОГО НЕ ВИСТАЧАЛО --- */}
           {currentTask?.option_c && (
             <button onClick={() => runCode('c')} style={styles.optionBtn}>
                var c = "{currentTask.option_c}"
@@ -369,14 +334,12 @@ function PracticePage({ specificLevel }) {
                var d = "{currentTask.option_d}"
             </button>
           )}
-          {/* ----------------------------- */}
         </div>
     );
   };
 
   if (loading) return <div style={styles.loadingScreen}>Loading...</div>;
 
-  // ... (CSS змінна скролбара теж тут) ...
   const customScrollbarCss = `
     ::-webkit-scrollbar { width: 12px; height: 12px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -387,8 +350,6 @@ function PracticePage({ specificLevel }) {
   return (
     <div style={styles.container}>
       <style>{customScrollbarCss}</style>
-      {/* Activity Bar */}
-      {/* Activity Bar */}
       <Sidebar />
 
       <div style={styles.sidebar}>
@@ -402,7 +363,6 @@ function PracticePage({ specificLevel }) {
                 {category}
               </div>
               {categoriesOpen[category] && tasks.filter(t => t.category === category).map(task => {
-                  // ПЕРЕВІРКА: Чи виконано завдання?
                   const isDone = completedTaskIds.has(task.id);
                   
                   return (
@@ -414,7 +374,6 @@ function PracticePage({ specificLevel }) {
                              color: isDone ? '#98c379' : (currentTask?.id === task.id ? '#fff' : '#999'), // Зелений якщо зроблено
                              borderLeft: currentTask?.id === task.id ? '2px solid #61dafb' : '2px solid transparent'
                          }}>
-                      {/* Якщо зроблено - показуємо галочку, інакше 'py.' */}
                       <span style={{
                           marginRight: 0, 
                           marginLeft: 18, 
@@ -460,7 +419,6 @@ function PracticePage({ specificLevel }) {
   );
 }
 
-// ... styles ... (залишай старі, які були)
 const styles = {
   container: { display: 'flex', height: '100vh', backgroundColor: '#1e1e1e', color: '#cccccc', fontFamily: '"JetBrains Mono", "Fira Code", monospace', overflow: 'hidden' },
   loadingScreen: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#1e1e1e', color: '#fff' },
@@ -495,9 +453,9 @@ const styles = {
   fragmentBtn: { backgroundColor: '#3e4451', border: '1px solid #565c64', color: '#abb2bf', padding: '6px 12px', borderRadius: '15px', cursor: 'pointer', fontFamily: 'monospace', fontSize: '0.9rem', transition: '0.2s' },
   undoBtn: { background: 'transparent', border: 'none', color: '#e06c75', cursor: 'pointer', fontSize: '1.2rem', marginLeft: 10 },
   hintBox: {
-    backgroundColor: 'rgba(255, 193, 7, 0.1)', // Напівпрозорий жовтий
-    border: '1px solid #ffc107', // Жовта рамка
-    color: '#ffc107', // Жовтий текст
+    backgroundColor: 'rgba(255, 193, 7, 0.1)', 
+    border: '1px solid #ffc107',
+    color: '#ffc107', 
     padding: '10px',
     marginBottom: '15px',
     borderRadius: '4px',

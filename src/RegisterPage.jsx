@@ -23,10 +23,8 @@ export default function RegisterPage() {
       setError("");
       setLoading(true);
       
-      // 1. Реєструємо і відправляємо лист
       await signup(email, password);
       
-      // 2. МИТТЄВО кидаємо на сторінку перевірки
       navigate("/verify-email"); 
       
     } catch (err) {
@@ -70,7 +68,6 @@ export default function RegisterPage() {
   );
 }
 
-// Стилі в дусі нашого додатку
 const styles = {
   container: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#1e1e1e', color: '#fff' },
   card: { backgroundColor: '#252526', padding: '40px', borderRadius: '8px', width: '100%', maxWidth: '400px', border: '1px solid #333', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' },

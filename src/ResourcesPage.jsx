@@ -12,7 +12,6 @@ export default function ResourcesPage() {
   const [definition, setDefinition] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // 1. Завантажуємо нотатки
   useEffect(() => {
     const fetchNotes = async () => {
       if (!currentUser) return;
@@ -27,7 +26,6 @@ export default function ResourcesPage() {
     fetchNotes();
   }, [currentUser]);
 
-  // 2. Додавання
   const handleAddNote = async (e) => {
     e.preventDefault();
     if (!term || !definition) return;
@@ -44,7 +42,6 @@ export default function ResourcesPage() {
     } catch (error) { console.error("Error adding note:", error); }
   };
 
-  // 3. Видалення
   const handleDelete = async (id) => {
     try {
       await deleteDoc(doc(db, "user_notes", id));
@@ -55,13 +52,11 @@ export default function ResourcesPage() {
   return (
     <div style={styles.pageWrapper}>
             
-      {/* БОКОВЕ МЕНЮ */}
       <Sidebar />
 
       <div style={styles.contentContainer}>
         <div style={styles.cardLayout}>
           
-          {/* ЛІВА ПАНЕЛЬ */}
           <div style={styles.sidebar}>
             <div style={styles.header}>
                <h2 style={{margin: 0, color: '#61dafb'}}>README.md</h2>
@@ -85,7 +80,6 @@ export default function ResourcesPage() {
             </div>
           </div>
 
-          {/* ПРАВА ПАНЕЛЬ */}
           <div style={styles.mainContent}>
             <h2 style={{color: '#98c379', fontSize: '1.2rem', marginBottom: 20}}>
               const my_dictionary = [ ... ]

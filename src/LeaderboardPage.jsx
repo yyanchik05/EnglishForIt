@@ -6,7 +6,6 @@ import Sidebar from "./components/Sidebar";
 import { motion } from "framer-motion";
 import { Crown, Medal, Shield, Zap } from "lucide-react";
 
-// --- ГЛОБАЛЬНІ ФУНКЦІЇ (Винесли їх назовні, щоб PodiumItem їх бачив) ---
 const getJobTitle = (score) => {
   if (score < 5) return "Intern";
   if (score < 15) return "Junior Dev";
@@ -24,7 +23,6 @@ const getRoleColor = (score) => {
   return "#c678dd"; 
 };
 
-// Ачівки
 const getBadges = (score) => {
   const badges = [];
   if (score >= 10) badges.push("⚡");
@@ -32,7 +30,6 @@ const getBadges = (score) => {
   if (score >= 100) badges.push("🔥");
   return badges;
 };
-// ---------------------------------------------------------------------
 
 export default function LeaderboardPage() {
   const { currentUser } = useAuth();
@@ -92,14 +89,12 @@ export default function LeaderboardPage() {
           <h1 style={styles.pageTitle}>HALL OF FAME 🏆</h1>
           {loading ? <div style={{color: '#666'}}>Calculating ranks...</div> : (
             <>
-              {/* PODIUM */}
               <div style={styles.podiumContainer}>
                 {topThree[1] && <PodiumItem user={topThree[1]} rank={2} color="#C0C0C0" height="140px" name={getDisplayName(topThree[1])} />}
                 {topThree[0] && <PodiumItem user={topThree[0]} rank={1} color="#FFD700" height="170px" isFirst name={getDisplayName(topThree[0])} />}
                 {topThree[2] && <PodiumItem user={topThree[2]} rank={3} color="#CD7F32" height="120px" name={getDisplayName(topThree[2])} />}
               </div>
 
-              {/* LIST */}
               <div style={styles.listCard}>
                 <div style={styles.listHeader}>
                   <span style={{width: '40px'}}>#</span>
@@ -130,7 +125,6 @@ export default function LeaderboardPage() {
                           </div>
                         </div>
                         
-                        {/* Відображення ролі в списку */}
                         <div style={{...styles.level, color: getRoleColor(user.score)}}>
                            {getJobTitle(user.score)}
                         </div>
@@ -165,7 +159,6 @@ export default function LeaderboardPage() {
   );
 }
 
-// --- ОНОВЛЕНИЙ PODIUM ITEM (Тепер показує роль) ---
 function PodiumItem({ user, rank, color, height, isFirst, name }) {
   const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${user.username}&background=random&color=fff&size=128`;
   return (
@@ -178,7 +171,6 @@ function PodiumItem({ user, rank, color, height, isFirst, name }) {
       
       <div style={styles.podiumName}>{name}</div>
       
-      {/* ДОДАЛИ РОЛЬ СЮДИ */}
       <div style={{fontSize: '0.75rem', color: getRoleColor(user.score), fontWeight: 'bold', marginBottom: '2px'}}>
         {getJobTitle(user.score)}
       </div>

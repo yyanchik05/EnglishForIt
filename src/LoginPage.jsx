@@ -17,21 +17,18 @@ export default function LoginPage() {
       setError("");
       setLoading(true);
       
-      // 1. Пробуємо зайти
       const userCredential = await login(email, password);
       const user = userCredential.user;
 
-      // 2. Перевіряємо, чи підтверджена пошта
       if (!user.emailVerified) {
-        navigate("/verify-email"); // Стоп! Спочатку підтвердь.
+        navigate("/verify-email"); 
       } else {
-        navigate("/junior"); // Все ок, заходь.
+        navigate("/junior"); 
       }
 
     } catch (err) {
-      // ... (твій код обробки помилок switch/case залишається тут) ...
       console.log(err.code);
-      setError("Failed to login"); // (або твій switch)
+      setError("Failed to login"); 
     }
     setLoading(false);
   }
@@ -66,7 +63,6 @@ export default function LoginPage() {
   );
 }
 
-// Використовуємо ті ж самі стилі, що і в RegisterPage
 const styles = {
   container: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#1e1e1e', color: '#fff' },
   card: { backgroundColor: '#252526', padding: '40px', borderRadius: '8px', width: '100%', maxWidth: '400px', border: '1px solid #333', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' },

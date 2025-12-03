@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext'; // Імпортуємо провайдер
-import PrivateRoute from './PrivateRoute'; // Імпортуємо охоронця
+import { AuthProvider } from './contexts/AuthContext'; 
+import PrivateRoute from './PrivateRoute'; 
 
 import HomePage from './HomePage';
 import PracticePage from './PracticePage';
@@ -13,16 +13,13 @@ import VerifyEmailPage from './VerifyEmailPage';
 
 function App() {
   return (
-    // Обгортаємо ВЕСЬ додаток в AuthProvider, щоб юзер був доступний всюди
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Публічні сторінки */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           
-          {/* Приватні сторінки (ЗАХИЩЕНІ) */}
           <Route 
             path="/junior" 
             element={<PrivateRoute><PracticePage specificLevel="junior" /></PrivateRoute>} 

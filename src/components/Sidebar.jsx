@@ -2,13 +2,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { House, BookOpen, Trophy, UserCircle } from 'lucide-react';
 
 export default function Sidebar() {
-  const location = useLocation(); // Щоб знати, де ми є, і підсвічувати активне
+  const location = useLocation(); 
   const path = location.pathname;
 
-  // Перевірка, чи активна іконка
   const isActive = (p) => path === p;
   
-  // Стилі для активного/неактивного стану
   const getStyle = (p) => isActive(p) ? styles.iconActive : styles.icon;
 
   return (

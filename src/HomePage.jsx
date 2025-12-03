@@ -5,13 +5,11 @@ import { motion } from "framer-motion";
 function HomePage() {
   const { currentUser } = useAuth();
   
-  // Анімація появи знизу (використовуємо всюди для єдиного стилю)
   const fadeInUp = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   };
 
-  // Анімація для кнопок (пульсація)
   const pulseAnimation = {
     scale: [1, 1.02, 1],
     transition: { duration: 2, repeat: Infinity, ease: "easeInOut" }
@@ -20,7 +18,6 @@ function HomePage() {
   return (
     <div style={styles.container}>
       
-      {/* --- НАВІГАЦІЯ --- */}
       <motion.nav 
         style={styles.navbar}
         initial={{ y: -100 }}
@@ -41,12 +38,10 @@ function HomePage() {
         </div>
       </motion.nav>
 
-      {/* --- HERO SECTION (ВИПРАВЛЕНО) --- */}
       <section style={styles.heroSection}>
         <div style={styles.overlay}></div>
         <div style={styles.content}>
           
-          {/* Заголовок тепер просто виїжджає, без глючного друку */}
           <motion.h1 
             style={styles.title}
             initial="hidden"
@@ -54,7 +49,6 @@ function HomePage() {
             variants={fadeInUp}
           >
             <span style={{ color: '#ccc' }}>while(</span>alive<span style={{ color: '#ccc' }}>)</span> <br/> 
-            {/* Градієнтний текст */}
             <span style={styles.gradientText}>learn_english()</span>;
           </motion.h1>
 
@@ -68,7 +62,6 @@ function HomePage() {
             Start learning "Merge Conflict", "Daily Standup", and "Salary Negotiation".
           </motion.p>
           
-          {/* Кнопка пульсує */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -84,7 +77,6 @@ function HomePage() {
         </div>
       </section>
 
-      {/* --- FEATURES --- */}
       <section id="features" style={styles.sectionDark}>
         <motion.h2 
           style={styles.sectionTitle}
@@ -116,7 +108,6 @@ function HomePage() {
         </div>
       </section>
 
-      {/* --- LEVELS --- */}
       <section id="levels" style={styles.sectionGray}>
         <motion.h2 
           style={styles.sectionTitle}
@@ -147,7 +138,6 @@ function HomePage() {
         </div>
       </section>
 
-      {/* --- FOOTER --- */}
       <footer style={styles.footer}>
         <div style={{opacity: 0.6}}>© 2025 IT.English_ Open Source Project.</div>
         <div style={{marginTop: 10, fontFamily: 'monospace', color: '#666'}}>git push --force english-skills</div>
@@ -157,7 +147,6 @@ function HomePage() {
   );
 }
 
-// --- КОМПОНЕНТИ ---
 
 function FeatureCard({ icon, title, desc }) {
   return (
@@ -177,10 +166,9 @@ function AnimatedLevelCard({ level, color, desc, topics, delay }) {
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: delay }}
       whileHover={{ y: -10, transition: { duration: 0.2 } }}
-      style={{ height: '100%' }} // <--- ВАЖЛИВО: Розтягуємо на всю висоту
+      style={{ height: '100%' }} 
     >
       <div style={{ ...styles.card, borderTop: `3px solid ${color}` }}>
-        {/* Обгортка для контенту (щоб він був зверху) */}
         <div style={{ flex: 1 }}> 
           <h3 style={{ fontSize: '1.5rem', marginBottom: 10, color: color }}>{level} DEV</h3>
           <p style={{ color: '#ccc', marginBottom: 20, minHeight: '60px' }}>{desc}</p>
@@ -192,7 +180,6 @@ function AnimatedLevelCard({ level, color, desc, topics, delay }) {
           </div>
         </div>
 
-        {/* Кнопка (притиснута до низу завдяки styles.levelButton) */}
         <Link to={`/${level.toLowerCase()}`} style={{ ...styles.levelButton, border: `1px solid ${color}`, color: color }}>
           Select Level
         </Link>
@@ -201,7 +188,6 @@ function AnimatedLevelCard({ level, color, desc, topics, delay }) {
   );
 }
 
-// --- СТИЛІ ---
 const styles = {
   container: { fontFamily: "'Inter', sans-serif", color: 'white', overflowX: 'hidden', scrollBehavior: 'smooth' },
   navbar: {
@@ -227,10 +213,8 @@ const styles = {
   overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(10,10,10,0.85)' },
   content: { position: 'relative', zIndex: 2, textAlign: 'center', maxWidth: '800px', padding: '20px' },
   
-  // Заголовок без overflow:hidden, щоб текст не ховався
   title: { fontSize: '3.5rem', fontWeight: '800', marginBottom: '20px', fontFamily: 'monospace', lineHeight: '1.2' },
   
-  // Новий стиль для градієнта
   gradientText: {
     background: 'linear-gradient(90deg, #61dafb, #d2a8ff)',
     WebkitBackgroundClip: 'text',
