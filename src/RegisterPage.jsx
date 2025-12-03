@@ -22,9 +22,13 @@ export default function RegisterPage() {
     try {
       setError("");
       setLoading(true);
+      
+      // 1. Реєструємо і відправляємо лист
       await signup(email, password);
-      alert("Account created! Check your email for verification.");
-      navigate("/"); // Перекидаємо на головну після реєстрації
+      
+      // 2. МИТТЄВО кидаємо на сторінку перевірки
+      navigate("/verify-email"); 
+      
     } catch (err) {
       setError("Failed to create an account: " + err.message);
     }

@@ -16,28 +16,22 @@ export default function LoginPage() {
     try {
       setError("");
       setLoading(true);
-      await login(email, password);
-      navigate("/junior");
-    } catch (err) {
-      console.log(err.code); // Щоб ти бачила реальний код помилки в консолі (F12)
+      
+      // 1. Пробуємо зайти
+      const userCredential = await login(email, password);
+      const user = userCredential.user;
 
-      // --- ТУТ МИ ПЕРЕКЛАДАЄМО ПОМИЛКИ ---
-      switch (err.code) {
-        case "auth/invalid-credential":
-        case "auth/user-not-found":
-        case "auth/wrong-password":
-          setError("Невірний емейл або пароль. Можливо, ви ще не зареєстровані?");
-          break;
-        case "auth/too-many-requests":
-          setError("Забагато спроб входу. Спробуйте пізніше.");
-          break;
-        case "auth/invalid-email":
-          setError("Некоректний формат пошти.");
-          break;
-        default:
-          setError("Помилка входу: " + err.message);
+      // 2. Перевіряємо, чи підтверджена пошта
+      if (!user.emailVerified) {
+        navigate("/verify-email"); // Стоп! Спочатку підтвердь.
+      } else {
+        navigate("/junior"); // Все ок, заходь.
       }
-      // ------------------------------------
+
+    } catch (err) {
+      // ... (твій код обробки помилок switch/case залишається тут) ...
+      console.log(err.code);
+      setError("Failed to login"); // (або твій switch)
     }
     setLoading(false);
   }
